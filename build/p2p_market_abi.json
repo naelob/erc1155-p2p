@@ -1,0 +1,629 @@
+[
+    {
+        "members": [
+            {
+                "name": "low",
+                "offset": 0,
+                "type": "felt"
+            },
+            {
+                "name": "high",
+                "offset": 1,
+                "type": "felt"
+            }
+        ],
+        "name": "Uint256",
+        "size": 2,
+        "type": "struct"
+    },
+    {
+        "members": [
+            {
+                "name": "owner",
+                "offset": 0,
+                "type": "felt"
+            },
+            {
+                "name": "asset_contract",
+                "offset": 1,
+                "type": "felt"
+            },
+            {
+                "name": "asset_ids_len",
+                "offset": 2,
+                "type": "felt"
+            },
+            {
+                "name": "asset_amounts_len",
+                "offset": 3,
+                "type": "felt"
+            },
+            {
+                "name": "status",
+                "offset": 4,
+                "type": "felt"
+            },
+            {
+                "name": "needs",
+                "offset": 5,
+                "type": "ResourcesNeeded"
+            },
+            {
+                "name": "expiration",
+                "offset": 49,
+                "type": "felt"
+            }
+        ],
+        "name": "Trade",
+        "size": 50,
+        "type": "struct"
+    },
+    {
+        "members": [
+            {
+                "name": "MIN_WOOD",
+                "offset": 0,
+                "type": "Uint256"
+            },
+            {
+                "name": "MIN_STONE",
+                "offset": 2,
+                "type": "Uint256"
+            },
+            {
+                "name": "MIN_COAL",
+                "offset": 4,
+                "type": "Uint256"
+            },
+            {
+                "name": "MIN_COPPER",
+                "offset": 6,
+                "type": "Uint256"
+            },
+            {
+                "name": "MIN_OBSIDIAN",
+                "offset": 8,
+                "type": "Uint256"
+            },
+            {
+                "name": "MIN_SILVER",
+                "offset": 10,
+                "type": "Uint256"
+            },
+            {
+                "name": "MIN_IRONWOOD",
+                "offset": 12,
+                "type": "Uint256"
+            },
+            {
+                "name": "MIN_COLD_IRON",
+                "offset": 14,
+                "type": "Uint256"
+            },
+            {
+                "name": "MIN_GOLD",
+                "offset": 16,
+                "type": "Uint256"
+            },
+            {
+                "name": "MIN_HARTWOOD",
+                "offset": 18,
+                "type": "Uint256"
+            },
+            {
+                "name": "MIN_DIAMONDS",
+                "offset": 20,
+                "type": "Uint256"
+            },
+            {
+                "name": "MIN_SAPPHIRE",
+                "offset": 22,
+                "type": "Uint256"
+            },
+            {
+                "name": "MIN_RUBY",
+                "offset": 24,
+                "type": "Uint256"
+            },
+            {
+                "name": "MIN_DEEP_CRYSTAL",
+                "offset": 26,
+                "type": "Uint256"
+            },
+            {
+                "name": "MIN_IGNUM",
+                "offset": 28,
+                "type": "Uint256"
+            },
+            {
+                "name": "MIN_ETHEREAL_SILICA",
+                "offset": 30,
+                "type": "Uint256"
+            },
+            {
+                "name": "MIN_TRUE_ICE",
+                "offset": 32,
+                "type": "Uint256"
+            },
+            {
+                "name": "MIN_TWILIGHT_QUARTZ",
+                "offset": 34,
+                "type": "Uint256"
+            },
+            {
+                "name": "MIN_ALCHEMICAL_SILVER",
+                "offset": 36,
+                "type": "Uint256"
+            },
+            {
+                "name": "MIN_ADAMANTINE",
+                "offset": 38,
+                "type": "Uint256"
+            },
+            {
+                "name": "MIN_MITHRAL",
+                "offset": 40,
+                "type": "Uint256"
+            },
+            {
+                "name": "MIN_DRAGONHIDE",
+                "offset": 42,
+                "type": "Uint256"
+            }
+        ],
+        "name": "ResourcesNeeded",
+        "size": 44,
+        "type": "struct"
+    },
+    {
+        "data": [
+            {
+                "name": "operator",
+                "type": "felt"
+            },
+            {
+                "name": "from_",
+                "type": "felt"
+            },
+            {
+                "name": "to",
+                "type": "felt"
+            },
+            {
+                "name": "id",
+                "type": "Uint256"
+            },
+            {
+                "name": "value",
+                "type": "Uint256"
+            }
+        ],
+        "keys": [],
+        "name": "TransferSingle",
+        "type": "event"
+    },
+    {
+        "data": [
+            {
+                "name": "operator",
+                "type": "felt"
+            },
+            {
+                "name": "from_",
+                "type": "felt"
+            },
+            {
+                "name": "to",
+                "type": "felt"
+            },
+            {
+                "name": "ids_len",
+                "type": "felt"
+            },
+            {
+                "name": "ids",
+                "type": "Uint256*"
+            },
+            {
+                "name": "values_len",
+                "type": "felt"
+            },
+            {
+                "name": "values",
+                "type": "Uint256*"
+            }
+        ],
+        "keys": [],
+        "name": "TransferBatch",
+        "type": "event"
+    },
+    {
+        "data": [
+            {
+                "name": "account",
+                "type": "felt"
+            },
+            {
+                "name": "operator",
+                "type": "felt"
+            },
+            {
+                "name": "approved",
+                "type": "felt"
+            }
+        ],
+        "keys": [],
+        "name": "ApprovalForAll",
+        "type": "event"
+    },
+    {
+        "data": [
+            {
+                "name": "value_len",
+                "type": "felt"
+            },
+            {
+                "name": "value",
+                "type": "felt*"
+            },
+            {
+                "name": "id",
+                "type": "Uint256"
+            }
+        ],
+        "keys": [],
+        "name": "URI",
+        "type": "event"
+    },
+    {
+        "data": [
+            {
+                "name": "implementation",
+                "type": "felt"
+            }
+        ],
+        "keys": [],
+        "name": "Upgraded",
+        "type": "event"
+    },
+    {
+        "data": [
+            {
+                "name": "previousAdmin",
+                "type": "felt"
+            },
+            {
+                "name": "newAdmin",
+                "type": "felt"
+            }
+        ],
+        "keys": [],
+        "name": "AdminChanged",
+        "type": "event"
+    },
+    {
+        "data": [
+            {
+                "name": "previousOwner",
+                "type": "felt"
+            },
+            {
+                "name": "newOwner",
+                "type": "felt"
+            }
+        ],
+        "keys": [],
+        "name": "OwnershipTransferred",
+        "type": "event"
+    },
+    {
+        "data": [
+            {
+                "name": "account",
+                "type": "felt"
+            }
+        ],
+        "keys": [],
+        "name": "Paused",
+        "type": "event"
+    },
+    {
+        "data": [
+            {
+                "name": "account",
+                "type": "felt"
+            }
+        ],
+        "keys": [],
+        "name": "Unpaused",
+        "type": "event"
+    },
+    {
+        "data": [
+            {
+                "name": "trade",
+                "type": "Trade"
+            }
+        ],
+        "keys": [],
+        "name": "TradeOpened",
+        "type": "event"
+    },
+    {
+        "data": [
+            {
+                "name": "trade",
+                "type": "Trade"
+            }
+        ],
+        "keys": [],
+        "name": "TradeCancelled",
+        "type": "event"
+    },
+    {
+        "data": [
+            {
+                "name": "trade",
+                "type": "Trade"
+            },
+            {
+                "name": "executor",
+                "type": "felt"
+            }
+        ],
+        "keys": [],
+        "name": "TradeExecuted",
+        "type": "event"
+    },
+    {
+        "inputs": [
+            {
+                "name": "proxy_admin",
+                "type": "felt"
+            },
+            {
+                "name": "asset_token",
+                "type": "felt"
+            }
+        ],
+        "name": "constructor",
+        "outputs": [],
+        "type": "constructor"
+    },
+    {
+        "inputs": [
+            {
+                "name": "_token_ids_len",
+                "type": "felt"
+            },
+            {
+                "name": "_token_ids",
+                "type": "Uint256*"
+            },
+            {
+                "name": "_token_amounts_len",
+                "type": "felt"
+            },
+            {
+                "name": "_token_amounts",
+                "type": "Uint256*"
+            },
+            {
+                "name": "_resources_needed_len",
+                "type": "felt"
+            },
+            {
+                "name": "_resources_needed",
+                "type": "Uint256*"
+            },
+            {
+                "name": "_expiration",
+                "type": "felt"
+            }
+        ],
+        "name": "open_trade",
+        "outputs": [],
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "_trade_id",
+                "type": "felt"
+            }
+        ],
+        "name": "execute_trade",
+        "outputs": [],
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "_trade_id",
+                "type": "felt"
+            }
+        ],
+        "name": "cancel_trade",
+        "outputs": [],
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "operator",
+                "type": "felt"
+            },
+            {
+                "name": "from_",
+                "type": "felt"
+            },
+            {
+                "name": "id",
+                "type": "Uint256"
+            },
+            {
+                "name": "amount",
+                "type": "Uint256"
+            },
+            {
+                "name": "data_len",
+                "type": "felt"
+            },
+            {
+                "name": "data",
+                "type": "felt*"
+            }
+        ],
+        "name": "onERC1155Received",
+        "outputs": [
+            {
+                "name": "selector",
+                "type": "felt"
+            }
+        ],
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "operator",
+                "type": "felt"
+            },
+            {
+                "name": "from_",
+                "type": "felt"
+            },
+            {
+                "name": "ids_len",
+                "type": "felt"
+            },
+            {
+                "name": "ids",
+                "type": "Uint256*"
+            },
+            {
+                "name": "amounts_len",
+                "type": "felt"
+            },
+            {
+                "name": "amounts",
+                "type": "Uint256*"
+            },
+            {
+                "name": "data_len",
+                "type": "felt"
+            },
+            {
+                "name": "data",
+                "type": "felt*"
+            }
+        ],
+        "name": "onERC1155BatchReceived",
+        "outputs": [
+            {
+                "name": "selector",
+                "type": "felt"
+            }
+        ],
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "interface_id",
+                "type": "felt"
+            }
+        ],
+        "name": "supportsInterface",
+        "outputs": [
+            {
+                "name": "success",
+                "type": "felt"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "idx",
+                "type": "felt"
+            }
+        ],
+        "name": "get_trade",
+        "outputs": [
+            {
+                "name": "trade",
+                "type": "Trade"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "get_trade_counter",
+        "outputs": [
+            {
+                "name": "value",
+                "type": "felt"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "idx",
+                "type": "felt"
+            }
+        ],
+        "name": "get_trade_status",
+        "outputs": [
+            {
+                "name": "status",
+                "type": "felt"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "paused",
+        "outputs": [
+            {
+                "name": "paused",
+                "type": "felt"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "get_asset_address",
+        "outputs": [
+            {
+                "name": "res",
+                "type": "felt"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "pause",
+        "outputs": [],
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "unpause",
+        "outputs": [],
+        "type": "function"
+    }
+]
