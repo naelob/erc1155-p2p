@@ -167,13 +167,13 @@ func open_trade{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}
     let (asset_add) = asset_address.read();
 
     // Make sure caller owns the ERC1155 assets
-    _assert_ownership(_token_ids_len, _token_ids, _token_amounts_len, _token_amounts);
+    //_assert_ownership(_token_ids_len, _token_ids, _token_amounts_len, _token_amounts);
 
     // check if expiration is valid
-    let (block_timestamp) = get_block_timestamp();
-    with_attr error_message("P2P_Market : Expiration Is Not Valid") {
-        assert_nn_le(block_timestamp, _expiration);
-    }
+    //let (block_timestamp) = get_block_timestamp();
+    //with_attr error_message("P2P_Market : Expiration Is Not Valid") {
+       // assert_nn_le(block_timestamp, _expiration);
+    //}
     
     let (trade_count) = trade_counter.read();
     

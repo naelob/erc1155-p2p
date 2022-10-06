@@ -242,9 +242,9 @@ namespace ERC1155 {
         // Emit events and check
         let (operator) = get_caller_address();
         TransferBatch.emit(operator, from_, to, ids_len, ids, amounts_len, amounts);
-        _do_safe_batch_transfer_acceptance_check(
-            operator, from_, to, ids_len, ids, amounts_len, amounts, data_len, data
-        );
+        //TODO : _do_safe_batch_transfer_acceptance_check(
+           // operator, from_, to, ids_len, ids, amounts_len, amounts, data_len, data
+        //);
         return ();
     }
 
@@ -313,17 +313,17 @@ namespace ERC1155 {
             values_len=amounts_len,
             values=amounts,
         );
-        _do_safe_batch_transfer_acceptance_check(
-            operator=operator,
-            from_=0,
-            to=to,
-            ids_len=ids_len,
-            ids=ids,
-            amounts_len=amounts_len,
-            amounts=amounts,
-            data_len=data_len,
-            data=data,
-        );
+        //TODO : _do_safe_batch_transfer_acceptance_check(
+            //operator=operator,
+            //from_=0,
+            //to=to,
+            //ids_len=ids_len,
+            //ids=ids,
+            //amounts_len=amounts_len,
+            //amounts=amounts,
+            //data_len=data_len,
+            //data=data,
+        //);
         return ();
     }
 
