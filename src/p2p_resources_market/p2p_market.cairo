@@ -159,7 +159,7 @@ func open_trade{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}
     alloc_locals;
     Pausable.assert_not_paused();
 
-    assert _token_ids_len = _token_amounts_len;
+    //assert _token_ids_len = _token_amounts_len;
 
     let (caller) = get_caller_address();
     let (contract_address) = get_contract_address();
@@ -328,6 +328,7 @@ func cancel_trade{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_pt
     _trade_id: felt
 ) {
     alloc_locals;
+    // TODO : add owner check
     Pausable.assert_not_paused();
     let (trade) = _trades.read(_trade_id);
 
