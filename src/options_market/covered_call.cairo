@@ -223,7 +223,7 @@ func assets_owned_by_this_contract(id : Uint256) -> (res: ResourceAsset) {
 //////
 
 @external
-func initializer{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+func constructor{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     proxy_admin : felt,
     settlement_token_address_ : felt,
     nft_contract_adress_ : felt,
@@ -250,14 +250,14 @@ func initializer{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
     return ();
 }
 
-@external 
-func upgrade{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
-    new_implementation : felt
-) {
-    Ownable.assert_only_owner();
-    Proxy._set_implementation_hash(new_implementation);
-    return ();
-}
+//@external 
+//func upgrade{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+  //  new_implementation : felt
+//) {
+   // Ownable.assert_only_owner();
+    //Proxy._set_implementation_hash(new_implementation);
+   // return ();
+//}
 
 
 //////

@@ -1,7 +1,9 @@
 %lang starknet
 
 from starkware.cairo.common.uint256 import Uint256
-
+from src.utils.options_market.covered_call import (
+    CallOption
+)
 @contract_interface
 namespace ICoveredCall {
     func bid(option_id : felt, bid_amount : felt) {
@@ -23,5 +25,36 @@ namespace ICoveredCall {
     }
 
     func burn_expired_option(option_id : felt) {
+    }
+
+    
+    func get_settlement_token_address(
+    )-> (address : felt){
+    }
+
+    
+    func get_underlying_token_address(
+    )-> (address : felt){
+    }
+
+    
+    func get_nft_address(
+    )-> (address : felt){
+    }
+
+    
+    func get_open_interest(
+    )-> (res : Uint256){
+    }
+
+    
+    func get_option_item(
+        idx : Uint256
+    )-> (res : CallOption){
+    }
+
+    
+    func get_black_scholes_address(
+    )-> (address : felt){
     }
 }
