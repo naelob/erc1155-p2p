@@ -1,7 +1,7 @@
 %lang starknet
 
 from starkware.cairo.common.uint256 import Uint256
-from src.utils.options_market.covered_call import (
+from src.options_market.covered_call import (
     CallOption
 )
 @contract_interface

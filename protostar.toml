@@ -11,7 +11,7 @@ p2p_market = [
 ]
 
 asset_erc1155 = [
-    "src/p2p_resources_market/asset_erc1155.cairo",
+    "src/common/asset_erc1155.cairo",
 ]
 
 nft_covered_contract = [

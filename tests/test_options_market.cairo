@@ -3,10 +3,14 @@
 from starkware.cairo.common.uint256 import Uint256
 from starkware.cairo.common.alloc import alloc
 
-from src.p2p_resources_market.interfaces.ICoveredCall import ICoveredCall
-from src.p2p_resources_market.interfaces.INftCoveredContract import INftCoveredContract
-from src.p2p_resources_market.interfaces.IAssetErc1155 import IAssetErc1155
+from src.options_market.interfaces.ICoveredCall import ICoveredCall
+from src.options_market.interfaces.INftCoveredContract import INftCoveredContract
+from src.common.interfaces.IAssetErc1155 import IAssetErc1155
+from src.common.interfaces.ISettlementToken import ISettlementToken
 
+from src.options_market.covered_call import (
+    CallOption
+)
 from starkware.cairo.common.bool import TRUE, FALSE
 
 from starkware.starknet.common.syscalls import (
@@ -20,14 +24,12 @@ from starkware.starknet.common.syscalls import (
 @external
 func __setup__() {
     tempvar deployer_address = 123456789987654321;
-    tempvar settlement_token = ;
-    tempvar black_scholes_address = ;
-    tempvar exchange_amm_address = ;
     %{ 
         context.deployer_address = ids.deployer_address
-        context.settlement_token = ids.settlement_token
-        context.black_scholes_address = ids.black_scholes_address
-        context.erc1155_address = deploy_contract("./src/p2p_resources_market/asset_erc1155.cairo").contract_address 
+        context.settlement_token = deploy_contract("./src/common/settlement_token.cairo",[]).contract_address 
+        context.black_scholes_address = deploy_contract("./src/common/bs.cairo",[]).contract_address 
+        context.exchange_amm_address = deploy_contract("./src/common/exchange_amm.cairo",[]).contract_address 
+        context.erc1155_address = deploy_contract("./src/common/asset_erc1155.cairo").contract_address 
         context.nft_covered_contract = deploy_contract("./src/options_market/nft_covered_contract.cairo").contract_address 
         context.covered_call = deploy_contract("./src/options_market/covered_call.cairo", 
             [
@@ -46,7 +48,7 @@ func __setup__() {
 }
 
 @external
-func test_storage_init{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+func test_storage_init{syscall_ptr: felt*, range_check_ptr}(
 ) {
     alloc_locals;
 
@@ -85,11 +87,11 @@ func test_storage_init{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_che
     assert counter.low = 1;
     assert counter.high = 0;
 
-
+    return ();
 }
 
 @external
-func test_write_call_option{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+func test_write_call_option{syscall_ptr: felt*, range_check_ptr}(
 ) {
     alloc_locals;
 
@@ -138,7 +140,6 @@ func test_write_call_option{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, rang
 
     ICoveredCall.write(
         contract_address=covered_call_address,
-        token_address=erc1155_address, 
         token_id=Uint256(1,0), 
         strike=Uint256(120,0), 
         expiration_time=869000
@@ -167,7 +168,7 @@ func test_write_call_option{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, rang
 
     // Check option has been registered in storage
     let (call_opt : CallOption) = ICoveredCall.get_option_item(
-        contract_address=covered_call_address
+        contract_address=covered_call_address,
         idx=counter
     );
 
@@ -184,19 +185,19 @@ func test_write_call_option{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, rang
 }
 
 @external
-func test_buy_call_option{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+func test_buy_call_option{syscall_ptr: felt*, range_check_ptr}(
 ) {
-    
+    return ();
 }
 
 @external
-func test_settle_call_option{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+func test_settle_call_option{syscall_ptr: felt*, range_check_ptr}(
 ) {
-    
+    return ();
 }
 
 @external
-func test_reclaim_underlying{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+func test_reclaim_underlying{syscall_ptr: felt*, range_check_ptr}(
 ) {
     alloc_locals;
 
@@ -247,7 +248,6 @@ func test_reclaim_underlying{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, ran
 
     ICoveredCall.write(
         contract_address=covered_call_address,
-        token_address=erc1155_address, 
         token_id=Uint256(1,0), 
         strike=Uint256(120,0), 
         expiration_time=869000
@@ -275,7 +275,7 @@ func test_reclaim_underlying{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, ran
 
     ICoveredCall.reclaim_underlying(
         contract_address=covered_call_address,
-        Uint256(1,0)
+        option_id=Uint256(1,0)
     );
 
     %{ stop_prank() %}
@@ -292,7 +292,7 @@ func test_reclaim_underlying{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, ran
     // check option is settled to true
 
     let (call_opt : CallOption) = ICoveredCall.get_option_item(
-        contract_address=covered_call_address
+        contract_address=covered_call_address,
         idx=counter
     );
     assert call_opt.Settled = TRUE;

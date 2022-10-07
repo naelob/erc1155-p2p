@@ -4,7 +4,7 @@ from starkware.cairo.common.uint256 import Uint256
 from starkware.cairo.common.alloc import alloc
 
 from src.p2p_resources_market.interfaces.IP2PMarket import IP2PMarket
-from src.p2p_resources_market.interfaces.IAssetErc1155 import IAssetErc1155
+from src.common.interfaces.IAssetErc1155 import IAssetErc1155
 
 from starkware.starknet.common.syscalls import (
     get_caller_address,
@@ -22,7 +22,7 @@ func __setup__() {
     tempvar deployer_address = 123456789987654321;
     %{ 
         context.deployer_address = ids.deployer_address
-        context.erc1155_address = deploy_contract("./src/p2p_resources_market/asset_erc1155.cairo").contract_address 
+        context.erc1155_address = deploy_contract("./src/common/asset_erc1155.cairo").contract_address 
         context.p2p_market = deploy_contract("./src/p2p_resources_market/p2p_market.cairo", [context.deployer_address, context.erc1155_address]).contract_address 
     %}
     return ();

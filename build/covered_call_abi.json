@@ -377,18 +377,7 @@
                 "type": "felt"
             }
         ],
-        "name": "initializer",
-        "outputs": [],
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "name": "new_implementation",
-                "type": "felt"
-            }
-        ],
-        "name": "upgrade",
+        "name": "constructor",
         "outputs": [],
         "type": "function"
     },
