@@ -23,5 +23,10 @@ namespace INftCoveredContract {
         from_: felt, to: felt, token_id: Uint256
     ) {
     }
+
+    func balanceOf(owner : felt) -> (
+        balance : Uint256
+    ){
+    }
     
 }
