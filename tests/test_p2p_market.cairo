@@ -120,21 +120,21 @@ func test_open_contract{syscall_ptr: felt*, range_check_ptr}() {
         _token_ids=token_ids, 
         _token_amounts_len=3, 
         _token_amounts=token_amounts,  
-        _resources_needed_len= 22,
+        _resources_needed_len=22,
         _resources_needed=resources_arr,
-        _expiration=172800,
+        _expiration=17280009888,
     );
     %{ stop_prank() %}
 
     // check new trade inserted
 
     let (trade : Trade) = IP2PMarket.get_trade(contract_address=contract_address, idx=counter);
-    assert trade.owner = 0;
+    assert trade.owner = 123456789987654321;
     assert trade.asset_contract = res;
     assert trade.asset_ids_len = 3;
     assert trade.asset_amounts_len = 3;
     assert trade.status = TradeStatus.Open; 
-    assert trade.expiration = 172800;
+    assert trade.expiration = 17280009888;
 
     // check resources 
 

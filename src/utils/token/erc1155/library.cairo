@@ -106,7 +106,7 @@ namespace ERC1155 {
     func balance_of_batch{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
         accounts_len: felt, accounts: felt*, ids_len: felt, ids: Uint256*
     ) -> (batch_balances_len: felt, batch_balances: Uint256*) {
-        alloc_locals;
+        alloc_locals; 
         // Check args are equal length arrays
         with_attr error_message("ERC1155: accounts and ids length mismatch") {
             assert ids_len = accounts_len;

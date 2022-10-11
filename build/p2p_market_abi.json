@@ -551,11 +551,134 @@
                 "type": "felt"
             }
         ],
+        "name": "get_mock_array",
+        "outputs": [
+            {
+                "name": "res",
+                "type": "felt"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "idx",
+                "type": "felt"
+            }
+        ],
         "name": "get_trade",
         "outputs": [
             {
                 "name": "trade",
                 "type": "Trade"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "idx",
+                "type": "felt"
+            }
+        ],
+        "name": "get_trade_owner",
+        "outputs": [
+            {
+                "name": "res",
+                "type": "felt"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "idx",
+                "type": "felt"
+            }
+        ],
+        "name": "get_trade_asset_contract",
+        "outputs": [
+            {
+                "name": "res",
+                "type": "felt"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "idx",
+                "type": "felt"
+            }
+        ],
+        "name": "get_trade_expiration",
+        "outputs": [
+            {
+                "name": "res",
+                "type": "felt"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "idx",
+                "type": "felt"
+            }
+        ],
+        "name": "get_trade_asset_ids_len",
+        "outputs": [
+            {
+                "name": "res",
+                "type": "felt"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "idx",
+                "type": "felt"
+            }
+        ],
+        "name": "get_trade_asset_amounts_len",
+        "outputs": [
+            {
+                "name": "res",
+                "type": "felt"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "idx",
+                "type": "felt"
+            }
+        ],
+        "name": "get_trade_resources",
+        "outputs": [
+            {
+                "name": "res_len",
+                "type": "felt"
+            },
+            {
+                "name": "res",
+                "type": "felt*"
             }
         ],
         "stateMutability": "view",
@@ -624,6 +747,46 @@
         "inputs": [],
         "name": "unpause",
         "outputs": [],
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "_resources_needed_len",
+                "type": "felt"
+            },
+            {
+                "name": "_resources_needed",
+                "type": "Uint256*"
+            }
+        ],
+        "name": "_get_needs",
+        "outputs": [
+            {
+                "name": "needs",
+                "type": "ResourcesNeeded"
+            }
+        ],
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "_resources_needed_len",
+                "type": "felt"
+            },
+            {
+                "name": "_resources_needed",
+                "type": "Uint256*"
+            }
+        ],
+        "name": "_get_needs_v2",
+        "outputs": [
+            {
+                "name": "needs",
+                "type": "ResourcesNeeded"
+            }
+        ],
         "type": "function"
     }
 ]

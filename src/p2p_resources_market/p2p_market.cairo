@@ -115,7 +115,9 @@ func _assets_ids_of_trades(idx : felt, j : felt) -> (id : Uint256) {
 func _amounts_ids_of_trades(idx : felt, j : felt) -> (amount : Uint256) {
 }
 
-
+@storage_var
+func mock_array(i : felt) -> (val: felt) {
+}
 // The current number of trades
 @storage_var
 func trade_counter() -> (value: felt) {
@@ -167,8 +169,8 @@ func open_trade{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}
     let (asset_add) = asset_address.read();
 
     // Make sure caller owns the ERC1155 assets
-    _assert_ownership(_token_ids_len, _token_ids, _token_amounts_len, _token_amounts);
-
+    //_assert_ownership(_token_ids_len, _token_ids, _token_amounts_len, _token_amounts);
+ 
     // check if expiration is valid
     let (block_timestamp) = get_block_timestamp();
     with_attr error_message("P2P_Market : Expiration Is Not Valid") {
@@ -179,7 +181,8 @@ func open_trade{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}
     
     //assert owner_of = caller;
 
-    let (local needs : ResourcesNeeded) = _get_needs(_resources_needed);
+    let (local needs : ResourcesNeeded) = _get_needs(_resources_needed_len,_resources_needed);
+   
     local trade : Trade = Trade(
         caller,
         asset_add,
@@ -190,7 +193,7 @@ func open_trade{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}
         _expiration
     );
 
-    //_trades.write(trade_count, trade);
+    _trades.write(trade_count, trade);
 
     // save assets/amounts ids for each trade 
     local start = 0;
@@ -248,33 +251,33 @@ func execute_trade{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_p
     let (local null : felt*) = alloc();
 
     // transfer items to contract
-    IERC1155.safeBatchTransferFrom(
-        token_address, 
-        trade.owner, 
-        this_address, 
-        trade.asset_ids_len,
-        assets,
-        trade.asset_amounts_len,
-        amounts,
-        0, 
-        null
-    );
+     //IERC1155.safeBatchTransferFrom(
+      //   token_address, 
+      //   trade.owner, 
+       //  this_address, 
+      //   trade.asset_ids_len,
+       //  assets,
+       //  trade.asset_amounts_len,
+       //  amounts,
+       //  0, 
+       //  null
+    // );
 
-    onERC1155BatchReceived(
-        caller, 
-        trade.owner,
-        trade.asset_ids_len,
-        assets,
-        trade.asset_amounts_len,
-        amounts,
-        0, 
-        null
-    );
+    //onERC1155BatchReceived(
+       //  caller, 
+       //  trade.owner,
+        // trade.asset_ids_len,
+        // assets,
+        // trade.asset_amounts_len,
+        // amounts,
+        // 0, 
+        // null
+     //);
 
     // transfer items to buyer
     IERC1155.safeBatchTransferFrom(
         token_address, 
-        this_address, 
+        trade.owner, 
         caller, 
         trade.asset_ids_len,
         assets,
@@ -406,9 +409,17 @@ func _uint_to_felt{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_p
 }
 
 
+
 //##########
 // GETTERS #
 //##########
+@view
+func get_mock_array{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    idx: felt
+)-> (res:felt){
+    let (res_) = mock_array.read(i=idx);
+    return (res=res_);
+}
 
 @view
 func get_trade{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
@@ -416,7 +427,67 @@ func get_trade{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
 ) -> (
     trade: Trade
 ) {
-    return _trades.read(idx);
+   return _trades.read(idx);
+}
+
+@view
+func get_trade_owner{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    idx: felt
+) -> (
+    res: felt
+) {
+    let (trade : Trade) = _trades.read(idx);
+    return (res=trade.owner);
+}
+
+@view
+func get_trade_asset_contract{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    idx: felt
+) -> (
+    res: felt
+) {
+    let (trade : Trade) = _trades.read(idx);
+    return (res=trade.asset_contract);
+}
+@view
+func get_trade_expiration{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    idx: felt
+) -> (
+    res: felt
+) {
+    let (trade : Trade) = _trades.read(idx);
+    return (res=trade.expiration);
+}
+
+@view
+func get_trade_asset_ids_len{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    idx: felt
+) -> (
+    res: felt
+) {
+    let (trade : Trade) = _trades.read(idx);
+    return (res=trade.asset_ids_len);
+}
+
+@view
+func get_trade_asset_amounts_len{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    idx: felt
+) -> (
+    res: felt
+) {
+    let (trade : Trade) = _trades.read(idx);
+    return (res=trade.asset_amounts_len);
+}
+
+@view
+func get_trade_resources{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    idx: felt
+) -> (
+    res_len : felt, res: felt*
+) {
+    let (trade : Trade) = _trades.read(idx);
+    let (result : felt*) = _get_uint256_needs(trade.needs);
+    return (res_len=22, res=result);
 }
 
 @view
@@ -541,12 +612,11 @@ func _get_amounts_ids_storage{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, ra
     }(_trade_id=_trade_id, amounts_ids_len=amounts_ids_len - 1, amounts_ids=amounts_ids+ Uint256.SIZE);   
 }  
 
-// convert an array of min_resources to a struct
+@external
 func _get_needs{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
-    _resources_needed : Uint256*
+    _resources_needed_len : felt, _resources_needed : Uint256*
 ) -> (needs : ResourcesNeeded){  
     alloc_locals;
-
     local res : ResourcesNeeded = ResourcesNeeded(
         [_resources_needed],
         [_resources_needed + Uint256.SIZE],
@@ -574,6 +644,127 @@ func _get_needs{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}
     return (needs=res);
 }
 
+// convert an array of min_resources to a struct
+@external
+func _get_needs_v2{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    _resources_needed_len : felt, _resources_needed : Uint256*
+) -> (needs : ResourcesNeeded){  
+    alloc_locals;
+    if(_resources_needed_len == 22){
+        local res : ResourcesNeeded = ResourcesNeeded(
+            [_resources_needed],
+            [_resources_needed + Uint256.SIZE],
+            [_resources_needed + 2 * Uint256.SIZE],
+            [_resources_needed + 3 * Uint256.SIZE],
+            [_resources_needed + 4 * Uint256.SIZE],
+            [_resources_needed + 5 * Uint256.SIZE],
+            [_resources_needed + 6 * Uint256.SIZE],
+            [_resources_needed + 7 * Uint256.SIZE],
+            [_resources_needed + 8 * Uint256.SIZE],
+            [_resources_needed + 9 * Uint256.SIZE],
+            [_resources_needed + 10 * Uint256.SIZE],
+            [_resources_needed + 11 * Uint256.SIZE],
+            [_resources_needed + 12 * Uint256.SIZE],
+            [_resources_needed + 13 * Uint256.SIZE],
+            [_resources_needed + 14 * Uint256.SIZE],
+            [_resources_needed + 15 * Uint256.SIZE],
+            [_resources_needed + 16 * Uint256.SIZE],
+            [_resources_needed + 17 * Uint256.SIZE],
+            [_resources_needed + 18 * Uint256.SIZE],
+            [_resources_needed + 19 * Uint256.SIZE],
+            [_resources_needed + 20 * Uint256.SIZE],
+            [_resources_needed + 21 * Uint256.SIZE],
+        );
+        return (needs=res);
+    }
+    let (_, padded_arr : Uint256*) = _pad_with_zeros(size=_resources_needed_len, _resources_needed=_resources_needed);
+    
+    mock_array.write(0,[padded_arr+ 0 * Uint256.SIZE].low);
+    mock_array.write(1,[padded_arr+ 1 * Uint256.SIZE].low);
+    mock_array.write(2,[padded_arr+ 2 * Uint256.SIZE].low);
+    mock_array.write(3,[padded_arr+ 3 * Uint256.SIZE].low);
+    mock_array.write(4,[padded_arr+ 4 * Uint256.SIZE].low);
+    mock_array.write(5,[padded_arr+ 5 * Uint256.SIZE].low);
+    mock_array.write(6,[padded_arr+ 6 * Uint256.SIZE].low);
+    mock_array.write(7,[padded_arr+ 7 * Uint256.SIZE].low);
+    mock_array.write(8,[padded_arr+ 8 * Uint256.SIZE].low);
+    mock_array.write(9,[padded_arr+ 9 * Uint256.SIZE].low);
+    mock_array.write(10,[padded_arr+ 10 * Uint256.SIZE].low);
+    mock_array.write(11,[padded_arr+ 11 * Uint256.SIZE].low);
+    mock_array.write(12,[padded_arr+ 12 * Uint256.SIZE].low);
+    mock_array.write(13,[padded_arr+ 13 * Uint256.SIZE].low);
+    mock_array.write(14,[padded_arr+ 14 * Uint256.SIZE].low);
+    mock_array.write(15,[padded_arr+15 * Uint256.SIZE].low);
+    mock_array.write(16,[padded_arr+ 16 * Uint256.SIZE].low);
+    mock_array.write(17,[padded_arr+ 17 * Uint256.SIZE].low);
+    mock_array.write(18,[padded_arr+ 18 * Uint256.SIZE].low);
+    mock_array.write(19,[padded_arr+ 19 * Uint256.SIZE].low);
+    mock_array.write(20,[padded_arr+ 20 * Uint256.SIZE].low);
+    mock_array.write(21,[padded_arr+ 21 * Uint256.SIZE].low);
+    mock_array.write(22,[padded_arr+ 22 * Uint256.SIZE].low);
+
+
+
+    local res : ResourcesNeeded = ResourcesNeeded(
+            [padded_arr],
+            [padded_arr + Uint256.SIZE],
+            [padded_arr + 2 * Uint256.SIZE],
+            [padded_arr + 3 * Uint256.SIZE],
+            [padded_arr + 4 * Uint256.SIZE],
+            [padded_arr + 5 * Uint256.SIZE],
+            [padded_arr + 6 * Uint256.SIZE],
+            [padded_arr + 7 * Uint256.SIZE],
+            [padded_arr + 8 * Uint256.SIZE],
+            [padded_arr + 9 * Uint256.SIZE],
+            [padded_arr + 10 * Uint256.SIZE],
+            [padded_arr + 11 * Uint256.SIZE],
+            [padded_arr + 12 * Uint256.SIZE],
+            [padded_arr + 13 * Uint256.SIZE],
+            [padded_arr + 14 * Uint256.SIZE],
+            [padded_arr + 15 * Uint256.SIZE],
+            [padded_arr + 16 * Uint256.SIZE],
+            [padded_arr + 17 * Uint256.SIZE],
+            [padded_arr + 18 * Uint256.SIZE],
+            [padded_arr + 19 * Uint256.SIZE],
+            [padded_arr + 20 * Uint256.SIZE],
+            [padded_arr + 21 * Uint256.SIZE],
+        );
+    return (needs=res);
+}
+
+
+func _pad_with_zeros{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    size : felt, _resources_needed : Uint256*
+) -> (padded_arr_len : felt, padded_arr : Uint256*) {
+    alloc_locals;
+    let (local res : Uint256*) = alloc();
+    // from 0 to size : same
+    _fill_head_array(start=0,end=size,to_fill=res,with_=_resources_needed);
+    // from size to 22 : Uint256(0,0)
+    _fill_tail_array(start=size,to_fill=res);
+
+    return (padded_arr_len=22,padded_arr=res);
+}
+
+func _fill_head_array{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    start : felt, end : felt, to_fill : Uint256*, with_ : Uint256*
+){
+    if (start==end) {
+        return ();
+    }
+    assert [to_fill] = [with_];
+    return _fill_head_array(start=start+1, end=end, to_fill=to_fill+ Uint256.SIZE, with_=with_ + Uint256.SIZE);
+}
+func _fill_tail_array{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    start : felt, to_fill : Uint256*
+){
+    if (start==22) {
+        return ();
+    }
+    assert [to_fill] = Uint256(0,0);
+    return _fill_tail_array(start=start+1, to_fill=to_fill+ Uint256.SIZE);
+}
+
 func _assert_ownership{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     _token_ids_len : felt, _token_ids : Uint256*, _token_amounts_len : felt, _token_amounts : Uint256*
 ) { 
@@ -582,13 +773,37 @@ func _assert_ownership{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_che
     let (token_address) = asset_address.read();
     let (caller) = get_caller_address();
 
+    // Fill an owners array
     let (local owners : felt*) = alloc();
-    assert [owners] = caller;
-    let (balance_len : felt, balance : Uint256*) = IERC1155.balanceOfBatch(token_address, 1, owners, _token_ids_len, _token_ids);
-    _assert_amounts(start=0, amounts=_token_amounts, balance=balance);
+    //assert [owners] = caller;
+    _fill_owners_array(tab_to_fill=owners, size=_token_ids_len, value=caller);
+    let (_, local balance : Uint256*) = IERC1155.balanceOfBatch(token_address, _token_ids_len, owners, _token_ids_len, _token_ids);
+    _assert_amounts_opening(amounts=_token_amounts, balance=balance, size=_token_ids_len);
     return ();
 }
+
+func _assert_amounts_opening{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    amounts : Uint256*, balance : Uint256*, size : felt
+) { 
+    if (size == 0) {
+        return ();
+    }
+    with_attr error_message("P2P_Market : Error Inside Asserting Min Amounts Are Available") {
+        uint256_le([amounts], [balance]);
+    }
+    return _assert_amounts_opening(amounts=amounts + Uint256.SIZE, balance=balance + Uint256.SIZE, size=size-1);
+}
  
+func _fill_owners_array{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    tab_to_fill : felt*, size : felt, value : felt
+){
+    if (size==0) {
+        return ();
+    }
+    assert [tab_to_fill] = value;
+    return _fill_owners_array(tab_to_fill=tab_to_fill+1, size=size - 1, value=value);
+}
+
 func _check_if_party_owns_needs{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     needs : ResourcesNeeded, caller : felt
 ){
@@ -606,9 +821,10 @@ func _check_if_party_owns_needs{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, 
     }(asset_ids_);
 
     let (local owners : felt*) = alloc();
-    assert [owners] = caller;
-    
-    let (balance_len : felt, balance : Uint256*) = IERC1155.balanceOfBatch(token_address, 1, owners, 22, ids);
+    //assert [owners] = caller;
+    _fill_owners_array(tab_to_fill=owners, size=22, value=caller);
+
+    let (balance_len : felt, balance : Uint256*) = IERC1155.balanceOfBatch(token_address, 22, owners, 22, ids);
 
     _assert_amounts(start=0, amounts=amounts, balance=balance);
     return ();
@@ -653,23 +869,56 @@ func _asset_amounts_loop{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_c
     assert [assets_amounts + 2 * Uint256.SIZE] = needs.MIN_COAL;
     assert [assets_amounts + 3 * Uint256.SIZE] = needs.MIN_COPPER;
     assert [assets_amounts + 4 * Uint256.SIZE] = needs.MIN_OBSIDIAN;
-    assert [assets_amounts + 5 * Uint256.SIZE] = needs.MIN_IRONWOOD;
-    assert [assets_amounts + 6 * Uint256.SIZE] = needs.MIN_COLD_IRON;
-    assert [assets_amounts + 7 * Uint256.SIZE] = needs.MIN_GOLD;
-    assert [assets_amounts + 8 * Uint256.SIZE] = needs.MIN_HARTWOOD;
-    assert [assets_amounts + 9 * Uint256.SIZE] = needs.MIN_DIAMONDS;
-    assert [assets_amounts + 10 * Uint256.SIZE] = needs.MIN_SAPPHIRE;
-    assert [assets_amounts + 11 * Uint256.SIZE] = needs.MIN_RUBY; 
-    assert [assets_amounts + 12 * Uint256.SIZE] = needs.MIN_DEEP_CRYSTAL; 
-    assert [assets_amounts + 13 * Uint256.SIZE] = needs.MIN_IGNUM;
-    assert [assets_amounts + 14 * Uint256.SIZE] = needs.MIN_ETHEREAL_SILICA;
-    assert [assets_amounts + 15 * Uint256.SIZE] = needs.MIN_TRUE_ICE;
-    assert [assets_amounts + 16 * Uint256.SIZE] = needs.MIN_TWILIGHT_QUARTZ;
-    assert [assets_amounts + 17 * Uint256.SIZE] = needs.MIN_ALCHEMICAL_SILVER;
-    assert [assets_amounts + 18 * Uint256.SIZE] = needs.MIN_ADAMANTINE;
-    assert [assets_amounts + 19 * Uint256.SIZE] = needs.MIN_MITHRAL;
-    assert [assets_amounts + 20 * Uint256.SIZE] = needs.MIN_DRAGONHIDE;
+    assert [assets_amounts + 5 * Uint256.SIZE] = needs.MIN_SILVER;
+    assert [assets_amounts + 6 * Uint256.SIZE] = needs.MIN_IRONWOOD;
+    assert [assets_amounts + 7 * Uint256.SIZE] = needs.MIN_COLD_IRON;
+    assert [assets_amounts + 8 * Uint256.SIZE] = needs.MIN_GOLD;
+    assert [assets_amounts + 9 * Uint256.SIZE] = needs.MIN_HARTWOOD;
+    assert [assets_amounts + 10 * Uint256.SIZE] = needs.MIN_DIAMONDS;
+    assert [assets_amounts + 11 * Uint256.SIZE] = needs.MIN_SAPPHIRE;
+    assert [assets_amounts + 12 * Uint256.SIZE] = needs.MIN_RUBY; 
+    assert [assets_amounts + 13 * Uint256.SIZE] = needs.MIN_DEEP_CRYSTAL; 
+    assert [assets_amounts + 14 * Uint256.SIZE] = needs.MIN_IGNUM;
+    assert [assets_amounts + 15 * Uint256.SIZE] = needs.MIN_ETHEREAL_SILICA;
+    assert [assets_amounts + 16 * Uint256.SIZE] = needs.MIN_TRUE_ICE;
+    assert [assets_amounts + 17 * Uint256.SIZE] = needs.MIN_TWILIGHT_QUARTZ;
+    assert [assets_amounts + 18 * Uint256.SIZE] = needs.MIN_ALCHEMICAL_SILVER;
+    assert [assets_amounts + 19 * Uint256.SIZE] = needs.MIN_ADAMANTINE;
+    assert [assets_amounts + 20 * Uint256.SIZE] = needs.MIN_MITHRAL;
+    assert [assets_amounts + 21 * Uint256.SIZE] = needs.MIN_DRAGONHIDE;
     
     return (res=assets_amounts);
 }
 
+func _get_uint256_needs{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    needs : ResourcesNeeded
+) -> (res : felt*){
+    alloc_locals;
+
+    let (local assets_amounts : felt*) = alloc();
+    
+    assert [assets_amounts] = needs.MIN_WOOD.low;
+    assert [assets_amounts + 1] = needs.MIN_STONE.low;
+    assert [assets_amounts + 2 ] = needs.MIN_COAL.low;
+    assert [assets_amounts + 3] = needs.MIN_COPPER.low;
+    assert [assets_amounts + 4] = needs.MIN_OBSIDIAN.low;
+    assert [assets_amounts + 5 ] = needs.MIN_SILVER.low;
+    assert [assets_amounts + 6 ] = needs.MIN_IRONWOOD.low;
+    assert [assets_amounts + 7 ] = needs.MIN_COLD_IRON.low;
+    assert [assets_amounts + 8 ] = needs.MIN_GOLD.low;
+    assert [assets_amounts + 9] = needs.MIN_HARTWOOD.low;
+    assert [assets_amounts + 10] = needs.MIN_DIAMONDS.low;
+    assert [assets_amounts + 11 ] = needs.MIN_SAPPHIRE.low;
+    assert [assets_amounts + 12 ] = needs.MIN_RUBY.low; 
+    assert [assets_amounts + 13 ] = needs.MIN_DEEP_CRYSTAL.low; 
+    assert [assets_amounts + 14 ] = needs.MIN_IGNUM.low;
+    assert [assets_amounts + 15 ] = needs.MIN_ETHEREAL_SILICA.low;
+    assert [assets_amounts + 16 ] = needs.MIN_TRUE_ICE.low;
+    assert [assets_amounts + 17] = needs.MIN_TWILIGHT_QUARTZ.low;
+    assert [assets_amounts + 18] = needs.MIN_ALCHEMICAL_SILVER.low;
+    assert [assets_amounts + 19] = needs.MIN_ADAMANTINE.low;
+    assert [assets_amounts + 20] = needs.MIN_MITHRAL.low;
+    assert [assets_amounts + 21] = needs.MIN_DRAGONHIDE.low;
+    
+    return (res=assets_amounts);
+}
