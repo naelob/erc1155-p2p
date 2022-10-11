@@ -16,7 +16,6 @@ func constructor{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_p
 ){
     ERC721.initializer(name, symbol);
     // TODO : Ownable.initializer(owner);
-
     return ();
 }
 
